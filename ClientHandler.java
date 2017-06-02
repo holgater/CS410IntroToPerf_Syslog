@@ -10,5 +10,4 @@ public class ClientHandler {
 		queue.add(pktIn);
 		System.out.println("Packet added to queue");
 	}
-
 }
