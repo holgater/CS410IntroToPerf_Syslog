@@ -9,7 +9,7 @@ public class Server {
         //Handles clients
         final ClientHandler clientHandler = new ClientHandler();
         
-        final Log log = new Log(clientHandler.queue);
+        final Log log = new Log(clientHandler);
         
         //processing packets if queue is not empty
         Thread logThread = new Thread(log);
@@ -20,25 +20,34 @@ public class Server {
         Socket clientSocket = null;
         
         //run a client
-        Client client = new Client("prog1",200,1000);
+        Client client = new Client("prog1",20,20);
         Thread threadclient = new Thread(client);
         System.out.println("SERVER: Starting up a thread client #1.");
         threadclient.start();
         
+        System.out.println(client.GetDone());
         
         //run a client
-        Client client2 = new Client("prog2",200,1000);
+        Client client2 = new Client("prog2",20,20);
         Thread threadclient2 = new Thread(client2);
         System.out.println("SERVER: Starting up a thread client #2.");
         threadclient2.start();
         
+        System.out.println(client2.GetDone());
         
         System.out.println("SERVER: Now we move forward to listen for client(s)..");
         
         
         while(true)	{
+            
+            if(client.GetDone()==true && client2.GetDone())
+            {
+                break;
+            }
+            
             //Connect new clients
             clientSocket = welcomeSocket.accept();
+                        System.out.println("loop2");
             System.out.println("SERVER: New client connection");
             
             //Create service to handle client
