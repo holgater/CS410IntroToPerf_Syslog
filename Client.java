@@ -4,43 +4,105 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.time.LocalTime;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Client {
+public class Client implements Runnable {
+    //constructor variables
+    String clientName;
+    int numPacket;
+    int packetSize;
     
-    public static void main(String argv[]) throws Exception {
+    public Client()
+    {
+        this.clientName = "Generic log entry";
+        this.numPacket = 50;
+        this.packetSize = 500;
+        
+    }
+    
+    public Client(String clientName, int numPacket, int packetSize)
+    {
+        this.clientName = clientName;
+        this.numPacket = numPacket;
+        this.packetSize = packetSize;
+    }
+    
+    @Override
+    public void run() {
+        
+        
         
         //set up for local user input/output
-        Scanner reader = new Scanner(System.in);
+        //Scanner reader = new Scanner(System.in);
         
         //set up connection
         System.out.println("CLIENT: Connecting...");
         //setup socket and input/output streams
-        Socket clientSocket = new Socket("localhost", 9001);
-        ObjectOutputStream outStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
-        System.out.println("CLIENT: Connection established");
+        Socket clientSocket;
+        try {
+            clientSocket = new Socket("localhost", 9001);
+            System.out.println("CLIENT: Socket created.");
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        //set up connection
+        ObjectOutputStream outStream;
+        try {
+            outStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            System.out.println("CLIENT: OutputStream created.");
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        //set up connection
+        ObjectInputStream inStream;
+        try {
+            inStream = new ObjectInputStream(clientSocket.getInputStream());
+            System.out.println("CLIENT: InputStream created.");
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        //set up connection
+        System.out.println("CLIENT: Connection established.");
         
         
-        //setup the display from inStream
+        //setup the display from inStream [joe test]
         //Displayer display = new Displayer(inStream);
         //run displayer in separate thread so that incoming messages don't block use
         //Thread thread = new Thread(display);
         //thread.start();
+        //load up packets string with dumby data
+        String packetString=this.clientName;
+        //subtract size of including clientName
+        int packetNameSize=this.clientName.length();
+        int j=0;
+        System.out.println("CLIENT: building packet size up." + (this.packetSize-packetNameSize));
+        while (j < (this.packetSize-packetNameSize))
+        {
+            packetString+="a";
+            j++;
+        }
+        System.out.println("CLIENT: starting to send " + this.numPacket + " packet(s).");
         int i = 0;
         //repeatedly send packets
-        while (i < 10) {
+        while (i < this.numPacket) {
             System.out.println("sent: " + i);
             Packet pkt = new Packet();
             pkt.SetInit(LocalTime.now());
-            pkt.SetData("Some string that takes up some space " + i);
-            
+            //load up dumby size (bunch of "a"'s)
+            pkt.SetData(packetString);
             //package properly and send to output stream
             sendPkt(pkt, outStream);
             ++i;
         } //end while
-        while(true) {
-            
-        }
+        System.out.println("CLIENT: Packets specified were sent to server, so time to die.");
+        return;
+        //while(true) {
+        //
+        //}
     } //end main
     
     //handle the command and output the appropriate packet
