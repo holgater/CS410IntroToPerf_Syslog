@@ -74,7 +74,8 @@ public class ClientService implements Runnable {
 	private void handlePacket(Packet pktIn) {
         if(pktIn.GetData().equals("STOP"))
         {
-                    clientHandler.SubtractClient();
+                    //clientHandler.SubtractClient();
+                    System.out.println("CLIENTSERVICE: were done sending packets");
                     this.graceful=false;
         }
 		System.out.println("Init Time: " + pktIn.GetInit() + " - Data: " + pktIn.GetData());

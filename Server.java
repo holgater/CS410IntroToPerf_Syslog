@@ -40,8 +40,9 @@ public class Server {
         
         while(true)	{
             
-            if(client.GetDone()==true && client2.GetDone())
+            if(client.GetDone()==true)
             {
+                System.out.println("exit");
                 break;
             }
             
