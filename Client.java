@@ -96,6 +96,11 @@ public class Client implements Runnable {
         int i = 0;
         //repeatedly send packets
         while (i < this.numPacket) {
+            try{
+            Thread.sleep(100);
+            }catch(InterruptedException e){
+                System.out.println(e);
+            }
             System.out.println("sent: " + i);
             Packet pkt = new Packet();
             pkt.SetInit(LocalTime.now());

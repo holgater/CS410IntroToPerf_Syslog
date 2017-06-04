@@ -21,6 +21,7 @@ public class Log implements Runnable{
 			try{
 				Thread.sleep(100);
 				if(queue.isEmpty() == false){
+                    System.out.println("log run");
                     System.out.println(LocalTime.now());
 				    //System.out.println(queue.poll().GetData());
                     System.out.println(handler.GetClient());
