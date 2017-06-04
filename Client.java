@@ -12,6 +12,7 @@ public class Client implements Runnable {
     String clientName;
     int numPacket;
     int packetSize;
+    boolean done=false;
     
     public Client()
     {
@@ -27,6 +28,12 @@ public class Client implements Runnable {
         this.numPacket = numPacket;
         this.packetSize = packetSize;
     }
+    
+    public boolean GetDone()
+    {
+        return this.done;
+    }
+    
     
     @Override
     public void run() {
@@ -99,6 +106,14 @@ public class Client implements Runnable {
             ++i;
         } //end while
         System.out.println("CLIENT: Packets specified were sent to server, so time to die.");
+        
+        ///alert log client is done sending packets
+        this.done=true;
+        Packet pkt = new Packet();
+        pkt.SetInit(LocalTime.now());
+        pkt.SetData("STOP");
+        sendPkt(pkt, outStream);
+        
         return;
         //while(true) {
         //

@@ -13,6 +13,8 @@ public class ClientService implements Runnable {
 	private ObjectInputStream inStream;
 	private ObjectOutputStream outStream;
 
+    boolean graceful=true;
+
 	//Constructor
 	public ClientService(Socket socketIn, ClientHandler handlerIn)  {
 		socket = socketIn;
@@ -22,13 +24,14 @@ public class ClientService implements Runnable {
 	@Override
 	public void run() {
 		//run the client service
+        clientHandler.AddClient();
 		try {
 			try {
 
 				//create new input/output streams
 				inStream = new ObjectInputStream(socket.getInputStream());
 				outStream = new ObjectOutputStream(socket.getOutputStream());
-				while(true) {
+				while(this.graceful==true) {
 					//write back
 					//Packet response = new Packet();
 					//response.SetInit(LocalTime.now());
@@ -41,7 +44,10 @@ public class ClientService implements Runnable {
 				}
 			} finally {
 				//close the socket
+                System.out.println("we are done.");
 				socket.close();
+
+
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -67,7 +73,12 @@ public class ClientService implements Runnable {
 	}
 
 	private void handlePacket(Packet pktIn) {
-
+        if(pktIn.GetData().equals("STOP"))
+        {
+                    //clientHandler.SubtractClient();
+                    System.out.println("CLIENTSERVICE: were done sending packets");
+                    this.graceful=false;
+        }
 		System.out.println("Init Time: " + pktIn.GetInit() + " - Data: " + pktIn.GetData());
 		clientHandler.addToQueue(pktIn);
 

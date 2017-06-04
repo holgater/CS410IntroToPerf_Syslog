@@ -14,6 +14,7 @@ public class Log implements Runnable{
     private ClientHandler ch;
     private long averageQueueTime;
     private long averageLogTime;
+    private boolean graceful=true;
     private static final String FILENAME = "logFile.txt";
 
     public Log(ClientHandler handlerIn){
@@ -37,34 +38,31 @@ public class Log implements Runnable{
         try{
             File file = new File(FILENAME);
             // if file doesnt exists, then create it
-			if (!file.exists()) {
-				file.createNewFile();
-			}
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
             // true = append file
-			fw = new FileWriter(file.getAbsoluteFile(), true);
-			bw = new BufferedWriter(fw);
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
 
-
-    		while(true){
+    		while(graceful==true){
                 try{
                     Thread.sleep(100);
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }
-    		    if(ch.size() > 0){
+        		if(ch.size() > 0){
                     Packet dequeuePacket = ch.deQueue();
                     dequeued++;
                     System.out.println("Dequeued: "+dequeued);
                     dequeuePacket.SetProcessTime(LocalTime.now());
-
                     //update averageQueueTime
                     long thisInQueueTime = inQTime(dequeuePacket);
                     totalQueueTime += thisInQueueTime;
                     ++numberQueued;
                     averageQueueTime = totalQueueTime / numberQueued;
                     System.out.println("averageQueueTime: "+averageQueueTime);
-
                     long beforeLog = System.currentTimeMillis();
                     bw.write(dequeuePacket.GetData()+", "+
                                         dequeuePacket.GetInit()+", "+
@@ -78,22 +76,39 @@ public class Log implements Runnable{
                     totalLogTime += thisLogTime;
                     averageLogTime = totalLogTime / numberLogged;
                     System.out.println("averageLogTime: "+averageLogTime);
-    			}
-    		}
-        }catch(IOException e){
+
+                    System.out.println(LocalTime.now());
+    			    //System.out.println(queue.poll().GetData());
+                    System.out.println(ch.GetClient());
+                    if (dequeuePacket.GetData().equals("STOP"))
+                    {
+                        System.out.println("We need to subtract a client.");
+                        ch.SubtractClient();
+                        System.out.println("reminaing clients: " + ch.GetClient());
+                    }
+                    if (ch.GetClient()==0)
+                    {
+                        System.out.println("At this time all packets should be done sending and the log has gotten all of them... so we breakup of this loop gracefully..");
+                        graceful=false;
+                    }
+        		}
+
+            }
+            //System.out.println("LOG: we can now perform work on log data, inclduing writing to file or outputting metrics..");
+    	}catch(IOException e){
             e.printStackTrace();
         }finally {
-			try {
-				if (bw != null)
-					bw.close();
+            try {
+                if (bw != null)
+                    bw.close();
 
-				if (fw != null)
-					fw.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
+                if (fw != null)
+                    fw.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
     //get time in milisecond a packet spend in the queue
     public long inQTime(Packet p){
