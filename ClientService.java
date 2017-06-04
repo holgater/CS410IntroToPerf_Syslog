@@ -12,8 +12,8 @@ public class ClientService implements Runnable {
 	private ClientHandler clientHandler;
 	private ObjectInputStream inStream;
 	private ObjectOutputStream outStream;
-	
-	//Constructor 
+
+	//Constructor
 	public ClientService(Socket socketIn, ClientHandler handlerIn)  {
 		socket = socketIn;
 		clientHandler = handlerIn;
@@ -24,7 +24,7 @@ public class ClientService implements Runnable {
 		//run the client service
 		try {
 			try {
-				
+
 				//create new input/output streams
 				inStream = new ObjectInputStream(socket.getInputStream());
 				outStream = new ObjectOutputStream(socket.getOutputStream());
@@ -46,12 +46,12 @@ public class ClientService implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void serviceClient() throws IOException {
 		while (true) {
-			
+
 			Packet pktIn;
 			//try to get incoming packet
 			try {
@@ -63,13 +63,13 @@ public class ClientService implements Runnable {
 			//actually handle the packet
 			handlePacket(pktIn);
 		}
-		
+
 	}
 
 	private void handlePacket(Packet pktIn) {
 
 		System.out.println("Init Time: " + pktIn.GetInit() + " - Data: " + pktIn.GetData());
 		clientHandler.addToQueue(pktIn);
-				
+
 	} //end handlePacket()
 }
