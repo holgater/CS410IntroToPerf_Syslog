@@ -10,18 +10,17 @@ public class Log implements Runnable{
         queue = q;
     }
 
-	//Log packets to file X if queue is not empty
-	public void run(){
-		while(true){
-			try{
-				Thread.sleep(100);
-				if(queue.isEmpty() == false){
-				    System.out.println(queue.poll().GetData());
-				}
-			}catch(InterruptedException e){
-				System.out.println(e);
-			}
-
+    //Log packets to file X if queue is not empty
+    public void run(){
+        while(true){
+	    try{
+		Thread.sleep(100);
+		if(queue.isEmpty() == false){
+		    System.out.println(queue.poll().GetData());
 		}
+	    }catch(InterruptedException e){
+		System.out.println(e);
+	    }
 	}
+    }
 }
