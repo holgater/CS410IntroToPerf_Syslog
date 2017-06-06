@@ -30,9 +30,7 @@ public class Client {
 		//repeatedly send packets
 		while (i < 10) {
 			System.out.println("sent: " + i);
-			Packet pkt = new Packet();
-			pkt.SetInit(LocalTime.now());
-			pkt.SetData("Some string that takes up some space " + i);
+			Packet pkt = new Packet(LocalTime.now(), "Some string that takes up some space " + i);
 
 			//package properly and send to output stream
 			sendPkt(pkt, outStream);
