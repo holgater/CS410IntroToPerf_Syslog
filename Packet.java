@@ -8,6 +8,11 @@ public class Packet implements Serializable {
 	private String data;
 	private Priority priority;
 	
+	public Packet(LocalTime init, String data) {
+		initTime = init;
+		this.data = data;
+	}
+	
 	public void SetInit(LocalTime init) {
 		initTime = init;
 	}
