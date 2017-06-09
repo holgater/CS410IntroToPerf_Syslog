@@ -13,8 +13,8 @@ import java.text.SimpleDateFormat;
 
 public class Log implements Runnable{
     private ClientHandler ch;
-    private long averageQueueTime;
-    private long averageLogTime;
+    private long averageQueueTime = 0;
+    private long averageLogTime = 0;
     private boolean graceful=true;
     private static final String FILENAME = "logFile.txt";
     private static final String PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
@@ -33,9 +33,13 @@ public class Log implements Runnable{
 	public void run(){
         long totalLogTime = 0;
         long totalQueueTime = 0;
+        int totalQueueLength = 0;
         int numberQueued = 0;
         int numberLogged = 0;
         int dequeued = 0;
+        int maxQueueLength = 0;
+
+        int averageQueueLength = 0;
 
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -52,13 +56,13 @@ public class Log implements Runnable{
             bw = new BufferedWriter(fw);
 
     		while(graceful==true){
-                /*
+
                 try{
                     Thread.sleep(100);
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }
-                */
+
         		if(ch.size() > 0){
                     Packet dequeuePacket = ch.deQueue();
                     dequeued++;
@@ -70,6 +74,17 @@ public class Log implements Runnable{
                     ++numberQueued;
                     averageQueueTime = totalQueueTime / numberQueued;
                     System.out.println("averageQueueTime: "+averageQueueTime);
+
+                    //update averageQueueLength
+                    totalQueueLength += ch.size();
+                    averageQueueLength = totalQueueLength / dequeued;
+
+                    //update Max queueLength
+                    if(ch.size() > maxQueueLength){
+                        maxQueueLength = ch.size();
+                    }
+
+
                     long beforeLog = System.currentTimeMillis();
                     bw.write(dequeuePacket.GetData()+", "+
                                         simpleDateFormat.format(new Date(dequeuePacket.GetInit()))+", "+
@@ -99,7 +114,9 @@ public class Log implements Runnable{
                         //write average to end of logfile
                         bw.write("averageQueueTime: " + averageQueueTime + " millisecond\n");
                         bw.write("averageLogTime: " + averageLogTime + " millisecond\n");
-
+                        bw.write("maxQueueLength: " + maxQueueLength + "\n");
+                        bw.write("averageQueueLength: " + averageQueueLength + "\n");
+                        bw.flush();
                     }
         		}
 

@@ -22,7 +22,7 @@ public class Server {
 
         //run a client
 
-        Client client = new Client("prog1",20,20);
+        Client client = new Client("prog1",100,20);
         Thread threadclient = new Thread(client);
         System.out.println("SERVER: Starting up a thread client #1.");
         threadclient.start();
@@ -30,7 +30,7 @@ public class Server {
         System.out.println(client.GetDone());
 
         //run a client
-        Client client2 = new Client("prog2",20,20);
+        Client client2 = new Client("prog2",100,20);
         Thread threadclient2 = new Thread(client2);
         System.out.println("SERVER: Starting up a thread client #2.");
         threadclient2.start();

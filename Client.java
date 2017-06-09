@@ -99,7 +99,7 @@ public class Client implements Runnable {
         //repeatedly send packets
         while (i < this.numPacket) {
             try{
-                Thread.sleep((int)getNextRandom()*1000); //fire an event in an range from 1 to about 100 millisecond
+                Thread.sleep((int)getNextRandom()*1); //fire an event in an range from 1 to about X millisecond
             }catch(InterruptedException e){
                 System.out.println(e);
             }
