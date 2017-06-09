@@ -2,17 +2,17 @@ import java.io.Serializable;
 import java.time.*;
 
 public class Packet implements Serializable {
-	private LocalTime initTime;
-	private LocalTime arrivalTime;
-	private LocalTime processTime;
+	private long initTime;
+	private long arrivalTime;
+	private long processTime;
 	private String data;
 	private Priority priority;
 
-	public void SetInit(LocalTime init) {
+	public void SetInit(long init) {
 		initTime = init;
 	}
 
-	public LocalTime GetInit() {
+	public long GetInit() {
 		return initTime;
 	}
 
@@ -24,19 +24,19 @@ public class Packet implements Serializable {
 		return data;
 	}
 
-	public void SetArrivalTime(LocalTime arrival){
+	public void SetArrivalTime(long arrival){
 		arrivalTime = arrival;
 	}
 
-	public LocalTime GetArrivalTime() {
+	public long GetArrivalTime() {
 		return arrivalTime;
 	}
 
-	public void SetProcessTime(LocalTime afterProcess){
+	public void SetProcessTime(long afterProcess){
 		processTime = afterProcess;
 	}
 
-	public LocalTime GetProcessTime() {
+	public long GetProcessTime() {
 		return processTime;
 	}
 }

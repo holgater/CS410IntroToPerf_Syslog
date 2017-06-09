@@ -1,11 +1,12 @@
 //This class polls front of the queue and log it to the target file.
 //and keeps track of averageLogTime and averageQueueTime
 import java.time.*;
-import java.util.LinkedList;
+import java.util.*;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 
 
@@ -16,6 +17,10 @@ public class Log implements Runnable{
     private long averageLogTime;
     private boolean graceful=true;
     private static final String FILENAME = "logFile.txt";
+    private static final String PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(PATTERN);
+
+
 
     public Log(ClientHandler handlerIn){
         ch = handlerIn;
@@ -47,16 +52,18 @@ public class Log implements Runnable{
             bw = new BufferedWriter(fw);
 
     		while(graceful==true){
+                /*
                 try{
                     Thread.sleep(100);
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }
+                */
         		if(ch.size() > 0){
                     Packet dequeuePacket = ch.deQueue();
                     dequeued++;
                     System.out.println("Dequeued: "+dequeued);
-                    dequeuePacket.SetProcessTime(LocalTime.now());
+                    dequeuePacket.SetProcessTime(System.currentTimeMillis());
                     //update averageQueueTime
                     long thisInQueueTime = inQTime(dequeuePacket);
                     totalQueueTime += thisInQueueTime;
@@ -65,9 +72,9 @@ public class Log implements Runnable{
                     System.out.println("averageQueueTime: "+averageQueueTime);
                     long beforeLog = System.currentTimeMillis();
                     bw.write(dequeuePacket.GetData()+", "+
-                                        dequeuePacket.GetInit()+", "+
-                                            dequeuePacket.GetArrivalTime()+", "+
-                                                dequeuePacket.GetProcessTime()+"\n");
+                                        simpleDateFormat.format(new Date(dequeuePacket.GetInit()))+", "+
+                                            simpleDateFormat.format(new Date(dequeuePacket.GetArrivalTime()))+", "+
+                                                simpleDateFormat.format(new Date(dequeuePacket.GetProcessTime()))+"\n");
                     bw.flush();
                     //bw.write("\t"+ch.size()+"\n");
                     long thisLogTime = System.currentTimeMillis() - beforeLog;
@@ -77,8 +84,6 @@ public class Log implements Runnable{
                     averageLogTime = totalLogTime / numberLogged;
                     System.out.println("averageLogTime: "+averageLogTime);
 
-                    System.out.println(LocalTime.now());
-    			    //System.out.println(queue.poll().GetData());
                     System.out.println(ch.GetClient());
                     if (dequeuePacket.GetData().equals("STOP"))
                     {
@@ -90,6 +95,11 @@ public class Log implements Runnable{
                     {
                         System.out.println("At this time all packets should be done sending and the log has gotten all of them... so we breakup of this loop gracefully..");
                         graceful=false;
+
+                        //write average to end of logfile
+                        bw.write("averageQueueTime: " + averageQueueTime + " millisecond\n");
+                        bw.write("averageLogTime: " + averageLogTime + " millisecond\n");
+
                     }
         		}
 
@@ -112,11 +122,7 @@ public class Log implements Runnable{
 
     //get time in milisecond a packet spend in the queue
     public long inQTime(Packet p){
-        if(p.GetProcessTime().getNano() < p.GetArrivalTime().getNano()){
-            System.out.println("Need to change LocalTime to Epoch time I believe");
-            System.out.println(p.GetProcessTime().getNano()+" < ?"+p.GetArrivalTime().getNano());
-        }
-        return (p.GetProcessTime().getNano() - p.GetArrivalTime().getNano())/1000000;
+        return ( p.GetProcessTime() - p.GetArrivalTime() );
     }
 
     public long getAverageQueueTime(){

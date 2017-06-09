@@ -9,7 +9,7 @@ public class ClientHandler {
 	LinkedList<Packet> queue = new LinkedList<Packet>();
     int clients=0;
     boolean active=false;
-    
+
     public void AddClient()
     {
         clients+=1;
@@ -20,17 +20,15 @@ public class ClientHandler {
         clients-=1;
         active=true;
     }
-    
+
     public int GetClient()
     {
         return this.clients;
     }
 
-
-
 	//set arrival time
 	public synchronized void addToQueue(Packet pktIn) {
-		pktIn.SetArrivalTime(LocalTime.now());
+		pktIn.SetArrivalTime(System.currentTimeMillis());
 		queue.add(pktIn);
 		System.out.println("Packet added to queue");
 	}
