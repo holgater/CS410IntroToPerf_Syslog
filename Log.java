@@ -38,7 +38,6 @@ public class Log implements Runnable{
         int numberLogged = 0;
         int dequeued = 0;
         int maxQueueLength = 0;
-
         int averageQueueLength = 0;
 
         BufferedWriter bw = null;
@@ -56,7 +55,6 @@ public class Log implements Runnable{
             bw = new BufferedWriter(fw);
 
     		while(graceful==true){
-
                 try{
                     Thread.sleep(100);
                 }catch(InterruptedException e){
@@ -66,8 +64,9 @@ public class Log implements Runnable{
         		if(ch.size() > 0){
                     Packet dequeuePacket = ch.deQueue();
                     dequeued++;
-                    System.out.println("Dequeued: "+dequeued);
+                    System.out.println("Dequeued: "+dequeued); //test purpose
                     dequeuePacket.SetProcessTime(System.currentTimeMillis());
+
                     //update averageQueueTime
                     long thisInQueueTime = inQTime(dequeuePacket);
                     totalQueueTime += thisInQueueTime;
@@ -84,14 +83,12 @@ public class Log implements Runnable{
                         maxQueueLength = ch.size();
                     }
 
-
                     long beforeLog = System.currentTimeMillis();
                     bw.write(dequeuePacket.GetData()+", "+
                                         simpleDateFormat.format(new Date(dequeuePacket.GetInit()))+", "+
                                             simpleDateFormat.format(new Date(dequeuePacket.GetArrivalTime()))+", "+
                                                 simpleDateFormat.format(new Date(dequeuePacket.GetProcessTime()))+"\n");
                     bw.flush();
-                    //bw.write("\t"+ch.size()+"\n");
                     long thisLogTime = System.currentTimeMillis() - beforeLog;
                     //update averageLogTime
                     numberLogged++;
