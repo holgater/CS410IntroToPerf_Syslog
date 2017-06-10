@@ -16,10 +16,10 @@ public class Log implements Runnable{
     private long averageQueueTime = 0;
     private long averageLogTime = 0;
     private boolean graceful=true;
-    private static final String FILENAME = "logFile.txt";
     private static final String PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(PATTERN);
-
+    private static final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+    private static final String FILENAME = "logFile" + timeStamp + ".csv";
 
 
     public Log(ClientHandler handlerIn){
@@ -56,7 +56,7 @@ public class Log implements Runnable{
 
     		while(graceful==true){
                 try{
-                    Thread.sleep(100);
+                    Thread.sleep(1);
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }

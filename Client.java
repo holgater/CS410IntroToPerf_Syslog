@@ -40,8 +40,7 @@ public class Client implements Runnable {
     @Override
     public void run() {
 
-
-
+        
         //set up for local user input/output
         //Scanner reader = new Scanner(System.in);
 

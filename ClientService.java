@@ -23,6 +23,7 @@ public class ClientService implements Runnable {
 
 	@Override
 	public void run() {
+        
 		//run the client service
         clientHandler.AddClient();
 		try {
@@ -57,7 +58,7 @@ public class ClientService implements Runnable {
 
 	private void serviceClient() throws IOException {
 		while (true) {
-
+            
 			Packet pktIn;
 			//try to get incoming packet
 			try {
@@ -79,6 +80,13 @@ public class ClientService implements Runnable {
                     System.out.println("CLIENTSERVICE: were done sending packets");
                     this.graceful=false;
         }
+        
+        try{
+            Thread.sleep(5);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        
 		System.out.println("Init Time: " + pktIn.GetInit() + " - Data: " + pktIn.GetData());
 		clientHandler.addToQueue(pktIn);
 
